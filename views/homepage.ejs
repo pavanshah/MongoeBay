@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel='stylesheet' href='/stylesheets/style.css' />
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+	<link rel='stylesheet' href='/stylesheets/style.css' />
+	<link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<script src="angularjs/angularebay.js"></script>
+</head>
+
+
+<body ng-app="login" ng-controller="login" style = "background:#FCFBE3">
+		
+	<div class = "container-fluid">
+		<div class = "row">
+				
+			<div class = "col-md-2">
+    			<h3>Hi <%= firstname %>!!</h3>
+    		</div>
+    			
+    		<div class = "col-md-2">
+    			<img src="logo.png" class="img-rounded" alt="Cinque Terre" width="175" height="70">
+    		</div>
+    			
+    		<div class = "col-md-1" style= "margin-top: 1%">
+    			<form action="myaccount" method="post" style="float: right; margin-top: 2%;">
+					<input type = "submit" value = "My Account" name = "btnAccount" class="btn btn-success"></input>
+				</form>
+    		</div>
+    			
+    		<div class = "col-md-2" style= "margin-top: 1%">
+    			<form action="sellonebay" method="post" style="float: right; margin-top: 2%;">
+					<input type = "submit" value = "Sell On Ebay" name = "btnSell" class="btn btn-success"></input>
+				</form>
+    		</div>
+    			
+    		<div class = "col-md-5">
+    			<form action="logout" method="post" style="float: right; margin-top: 2%;">
+					<input type="submit" value="Logout" class="btn btn-success"/>
+				</form>
+    		</div>
+    			
+    	</div>
+    </div>	
+    	
+    	
+    <div class = "container-fluid">
+		<div class = "row">
+			<div class = "col-md-8">
+			
+				<div class = "row" style = "margin-left: 1%;">
+					<h3 style = "text-align:center">New Advertisements</h3>		
+						
+						<% for(var advertisement in advertisementdata) 
+	         			{              
+            			%>
+            				<div class = "col-md-4">
+								<div class = "advertisementStyle">
+									<strong>Name :</strong> <%= advertisementdata[advertisement].itemname %></br>
+									<strong>Description :</strong> <%= advertisementdata[advertisement].itemdescription %></br>
+									<strong>Price :</strong> $<%= advertisementdata[advertisement].itemprice %></br>
+									<strong>Contact :</strong> <%= advertisementdata[advertisement].username %></br>
+								</div>
+								<input type = "button" name = "btnAddToCart" value = "Add To Cart" class="btn btn-primary center-block" ng-click = "addtocart('<%= advertisementdata[advertisement].itemname %>', '<%= advertisementdata[advertisement].itemprice %>')"></input>
+							</div>
+				       
+           				<% 
+	        			}  
+	       				%>
+				</div>	
+			</div>
+				
+				
+		<div class = "col-md-4">
+			<div class = "cartStyle">
+					
+				<h3 style = "text-align: center;">Your Cart<h3>
+					
+					<table class="table table-bordered table-hover" style="width:100%">
+  						<tr>
+    						<th style="text-align:center">Name</th>
+    						<th style="text-align:center">Price</th>
+    						<th style="text-align:center">Total</th>
+  						</tr>
+ 
+ 						<% for(var cartitem in cartdata) 
+	         			{              
+            			%>
+					 	
+					 	<tr>
+    						<td style="font-size : 15px"><img src="delete.png" name = "deleteItem" width="30" height="30" style="float: left" ng-click = "deleteItem('<%= cartdata[cartitem].itemname %>', '<%= cartdata[cartitem].itemprice %>');"><%= cartdata[cartitem].itemname %></td>
+    						<td style="font-size : 15px"><%= cartdata[cartitem].itemprice %></td>
+    						<td style="font-size : 15px"><%= cartdata[cartitem].itemprice %></td>
+    						<td></td>
+  						</tr>
+  						
+  						<% 
+	        			}  
+	       				%>
+  							
+  						<tr>
+  							<th style="text-align:center">SubTotal</th>
+  							<th style="text-align:center"></th>
+  							<th style="text-align:center"><%= totalPrice %></th>
+  						</tr>
+					</table>
+			</div>
+		</div>
+					
+			<form method = "post" action = "checkout">
+				<input type = "submit" value = "Proceed To Checkout" style="float: right" class="btn btn-success"></input>
+			</form>
+    	
+    	</div>
+    </div>
+ 
+ </body>
+
+
+</html>

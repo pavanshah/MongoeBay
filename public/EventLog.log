@@ -1,0 +1,20 @@
+{"level":"info","message":"User with email id amitpatel@gmail.com added Bicycle to cart","timestamp":"2016-10-24T08:38:19.313Z"}
+{"level":"info","message":"User with email id apoorvmehta@gmail.com added vacuum cleaner to cart","timestamp":"2016-10-24T08:40:04.146Z"}
+{"level":"info","message":"User with email id apoorvmehta@gmail.com added iphone 6s to cart","timestamp":"2016-10-24T08:40:07.114Z"}
+{"level":"info","message":"User with email id apoorvmehta@gmail.com deleted vacuum cleaner from cart","timestamp":"2016-10-24T08:40:08.679Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com added Bicycle to cart","timestamp":"2016-10-24T08:44:45.990Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com added vacuum cleaner to cart","timestamp":"2016-10-24T08:44:47.408Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com deleted skullcandy headphones from cart","timestamp":"2016-10-24T08:44:49.885Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com deleted iphone 6s from cart","timestamp":"2016-10-24T08:44:51.171Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com clicked on sell on ebay","timestamp":"2016-10-24T08:44:53.752Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com clicked on my account","timestamp":"2016-10-24T08:44:57.838Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com clicked on checkout","timestamp":"2016-10-24T08:45:02.117Z"}
+{"level":"info","message":"User with email id apoorvmehta@gmail.com clicked on sell on ebay","timestamp":"2016-10-24T08:48:03.780Z"}
+{"level":"info","message":"User with email id apoorvmehta@gmail.com clicked on sell on ebay","timestamp":"2016-10-24T08:48:35.006Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com clicked on sell on ebay","timestamp":"2016-10-24T08:51:10.649Z"}
+{"level":"info","message":"User with email id amitpatel@gmail.com added Bicycle to cart","timestamp":"2016-10-24T08:53:19.850Z"}
+{"level":"info","message":"User with email id amitpatel@gmail.com added vacuum cleaner to cart","timestamp":"2016-10-24T08:53:21.234Z"}
+{"level":"info","message":"User with email id amitpatel@gmail.com clicked on my account","timestamp":"2016-10-24T08:54:04.474Z"}
+{"level":"info","message":"User with email id amitpatel@gmail.com clicked on sell on ebay","timestamp":"2016-10-24T08:54:11.299Z"}
+{"level":"info","message":"User with email id amitpatel@gmail.com clicked on my account","timestamp":"2016-10-24T08:54:15.289Z"}
+{"level":"info","message":"User with email id amitpatel@gmail.com clicked on checkout","timestamp":"2016-10-24T08:54:22.135Z"}
