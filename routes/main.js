@@ -1,5 +1,6 @@
 var mongo = require("./mongo");
 var mongoURL = "mongodb://localhost:27017/eBayDatabase";
+var CronJob = require('cron').CronJob;
 
 var winston = require('winston');
 winston.add(winston.transports.File, { filename: 'public/EventLog.log' });
@@ -7,6 +8,7 @@ winston.remove(winston.transports.Console);
 
 var advertisementdata = [];
 var totalPrice = 0;
+var biddingdata = [];
 var cartdata = [];
 
 function initialiseData(req, res)
@@ -23,7 +25,7 @@ function initialiseData(req, res)
 				totalPrice = user.totalprice;
 				json_responses = {"statusCode" : 200};
 				res.send(json_responses);
-			} 
+			}
 			
 			else 
 			{
@@ -62,6 +64,29 @@ exports.checkLogin = function(req,res){
 };
 
 
+function initialiseuseritemsdata(req, res, inputUsername)
+{
+	
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('useritemcollection');
+		var json_responses;
+	
+		coll.save({_id:inputUsername, username:inputUsername, useritems : []}, function(err, user){
+		if (user) 
+		{
+			json_responses = {"statusCode" : 200};
+			res.send(json_responses);
+
+		} else {
+			console.log("Error in creating useritem data");
+			json_responses = {"statusCode" : 401};
+			res.send(json_responses);
+		}
+		});
+	});
+}
+
 function initialisecart(req, res, inputUsername)
 {
 	mongo.connect(mongoURL, function(){
@@ -70,7 +95,9 @@ function initialisecart(req, res, inputUsername)
 		var json_responses;
 	
 		coll.save({_id:inputUsername, username:inputUsername, cartdata : cartdata , totalprice : totalPrice}, function(err, user){
-		if (user) {
+		if (user) 
+		{
+			initialiseuseritemsdata(req, res, inputUsername);
 			json_responses = {"statusCode" : 200};
 			res.send(json_responses);
 
@@ -111,6 +138,30 @@ exports.checkSignup = function(req,res){
 };
 
 
+function fetchbiddingdata(req, res)
+{
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('biddingcollection');		//collection data in coll
+		
+		coll.find({},{}).toArray(function(err, user){	//retrive data
+			if (user) 
+			{
+				biddingdata = user;
+				console.log(biddingdata)
+				//Set these headers to notify the browser not to maintain any cache for the page being loaded
+				res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
+				res.render("homepage",{firstname:req.session.firstname, advertisementdata:advertisementdata, cartdata:cartdata, totalPrice:totalPrice, biddingdata:biddingdata});
+			} 
+			
+			else 
+			{
+				console.log("Error in advertisement data");
+			}
+		})
+	});
+}
+
 //Redirects to the homepage
 exports.redirectToHomepage = function(req,res)
 {
@@ -125,10 +176,7 @@ exports.redirectToHomepage = function(req,res)
 				if (user) 
 				{
 					advertisementdata = user;
-					
-					//Set these headers to notify the browser not to maintain any cache for the page being loaded
-					res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-					res.render("homepage",{firstname:req.session.firstname, advertisementdata:advertisementdata, cartdata:cartdata, totalPrice:totalPrice});
+					fetchbiddingdata(req, res);
 				} 
 				
 				else 
@@ -147,22 +195,41 @@ exports.redirectToHomepage = function(req,res)
 
 exports.addtocart = function(req, res)
 {
+	var matchflag = false;
 	var itemname = req.param("itemname");
 	var itemprice = req.param("itemprice");
 	console.log(req.session.username);
-	
-	winston.info('User with email id '+req.session.username+' added '+itemname+' to cart');
-	
-	totalPrice = totalPrice + Number(itemprice);
-	cartdata.push({'itemname':itemname, 'itemprice':itemprice});
-	
-	console.log("cartdata - "+cartdata);
-	console.log("totalprice - "+totalPrice);
-	
-	
 	var json_responses;
+	
+	for(var i = 0; i<cartdata.length;i++)
+	{
+		if(itemname == cartdata[i].itemname)
+			{
+				matchflag = true;
+			}
+	}
+	
+	console.log(matchflag);
+	
+	
+	if(matchflag == true)
+	{
+		console.log("Duplicate Item");
+		json_responses = {"statusCode" : 402};
+		res.send(json_responses);
+	}
+	
+	else
+	{
+		winston.info('User with email id '+req.session.username+' added '+itemname+' to cart');
+	
+		totalPrice = totalPrice + Number(itemprice);
+		cartdata.push({'itemname':itemname, 'itemprice':itemprice});
+	
+		console.log("cartdata - "+cartdata);
+		console.log("totalprice - "+totalPrice);
 
-	mongo.connect(mongoURL, function(){
+		mongo.connect(mongoURL, function(){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('cartcollection');		//collection data in coll
 		
@@ -176,9 +243,9 @@ exports.addtocart = function(req, res)
 				json_responses = {"statusCode" : 401};
 				res.send(json_responses);
 			}
+			});
 		});
-	});
-	
+	}
 };
 
 
@@ -233,6 +300,29 @@ function updatecartafterdeletion(req, res)
 }
 
 
+function finduserhistory(req, res, userdetails, useradvertisementdetails)
+{
+	
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('useritemcollection');		//collection data in coll
+		
+		coll.find({username : req.session.username}).toArray(function(err, user){	//retrive data
+			if (user) 
+			{
+				var historydetails = user;
+				res.render("myaccount",{useradvertisementdetails : useradvertisementdetails, userdetails : userdetails, historydetails : historydetails});
+			} 
+			
+			else 
+			{
+				console.log("Error in history data");
+			}
+		})
+	});
+	
+}
+
 function finduseradvertisements(req, res, userdetails)
 {
 	
@@ -244,6 +334,8 @@ function finduseradvertisements(req, res, userdetails)
 			if (user) 
 			{
 				var useradvertisementdetails = user;
+				
+				finduserhistory(req, res, userdetails, useradvertisementdetails)
 				
 				res.render("myaccount",{useradvertisementdetails : useradvertisementdetails, userdetails : userdetails});
 			} 
@@ -323,7 +415,228 @@ exports.submitadvertisement = function(req,res)
 exports.checkout = function(req, res)
 {
 	winston.info('User with email id '+req.session.username+' clicked on checkout');
-	res.render("paymentpage",{cartdata:cartdata, totalPrice:totalPrice});
+	res.render("addresspage",{cartdata:cartdata, totalPrice:totalPrice});
+};
+
+
+exports.paymentpage = function(req, res)
+{
+	res.render("paymentpage");
+};
+
+
+exports.success = function(req, res)
+{
+	res.render("successpage");
+	
+	//add to user items
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('useritemcollection');		//collection data in coll
+		
+		for(var i=0; i< cartdata.length; i++)
+		{
+		
+			coll.update({username : req.session.username}, {$push : {useritems : cartdata[i]} } , function(err, user){
+				if (user) 
+				{
+					console.log("account updated");
+				} 
+				else 
+				{
+					console.log("Error in adding to user account");
+				}
+			});	
+		}
+	});
+	
+	
+	//delete advertisement
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('advertisementcollection');		//collection data in coll
+		
+		for(var j=0; j< cartdata.length; j++)
+		{
+		
+			coll.remove({itemname : cartdata[j].itemname} , function(err, user){
+				if (user) 
+				{
+					console.log("deleted advertisement");
+				} 
+				else 
+				{
+					console.log("Error in deleting");
+				}
+			});	
+		}
+	});
+	
+	//delete from cartdata
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('cartcollection');		//collection data in coll
+	
+			coll.update({username : req.session.username}, {$set : {cartdata : [], totalprice : 0 }} , function(err, user){
+				if (user) 
+				{
+					console.log("cartdata updated");
+				} 
+				else 
+				{
+					console.log("Error in updating cartdata");
+				}
+			});	
+	});
+}
+
+
+exports.changebidamount = function(req, res)
+{
+	console.log(req.param("itemname"));
+	console.log(req.param("amount"));
+
+	var itemname = req.param("itemname");
+	var amount = req.param("amount");
+	var json_responses;
+	//update bid amount
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('biddingcollection');		//collection data in coll
+	
+			coll.update({itemname : itemname}, {$set : {itemprice : amount, buyer : req.session.username}} , function(err, user){
+				if (user) 
+				{
+					console.log("bid amount updated");
+					json_responses = {"statusCode" : 200};
+					res.send(json_responses);
+				} 
+				else 
+				{
+					console.log("Error in updating bid amount");
+					json_responses = {"statusCode" : 401};
+					res.send(json_responses);
+				}
+			});	
+	});
+};
+
+
+function deletefrombiddingadvertisements(itemname)
+{
+	//delete advertisement
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('biddingcollection');		//collection data in coll
+		
+			coll.remove({itemname : itemname} , function(err, user){
+				if (user) 
+				{
+					console.log("deleted advertisement");
+				} 
+				else 
+				{
+					console.log("Error in deleting");
+				}
+			});	
+	});
+	
+}
+
+function addbiditemtouseraccount(buyer, itemname, itemprice)
+{
+	console.log("adding item");
+	
+	
+	//add to user items
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('useritemcollection');		//collection data in coll
+		
+			coll.update({username : buyer}, {$push : {useritems : {itemname : itemname, itemprice : itemprice} } } , function(err, user){
+				if (user) 
+				{
+					console.log("account updated");
+					deletefrombiddingadvertisements(itemname);
+				} 
+				else 
+				{
+					console.log("Error in adding to user account");
+				}
+			});	
+	});
+	
+	
+}
+
+function sellitemafterbid(itemname, itemprice)
+{
+	console.log("ready to sell "+itemname);
+	
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('biddingcollection');		//collection data in coll
+	
+			coll.findOne({itemname : itemname} , function(err, user){
+				if (user) 
+				{
+					var buyer = user.buyer;
+					console.log("buyer "+user.buyer);
+					addbiditemtouseraccount(buyer, itemname, itemprice);
+				} 
+				else 
+				{
+					console.log("Error in removing item");
+				}
+			});	
+	});
+}
+
+exports.addBiddingAdvertisement = function(req, res)
+{
+	var itemname = req.param("itemname");
+	var itemdescription = req.param("itemdescription");
+	var itemprice = req.param("itemprice");
+	
+	
+	var json_responses;
+
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('biddingcollection');		//collection data in coll
+		
+		coll.insert({username:req.session.username, itemname:itemname, itemdescription:itemdescription, itemprice:itemprice, buyer:req.session.username}, function(err, user){
+			if (user) 
+			{
+				var datetoday = new Date();
+				console.log(datetoday);
+				datetoday.setDate(datetoday.getDate() + 4);
+				console.log(datetoday);
+				
+				
+				var CronJob = require('cron').CronJob;
+				var job = new CronJob(datetoday, function() 
+				  {
+						sellitemafterbid(itemname, itemprice);
+				  }, function () {
+				    /* This function is executed when the job stops */
+				  },
+				  true,
+				  'America/Los_Angeles'
+				);
+				
+				
+				
+				json_responses = {"statusCode" : 200};
+				res.send(json_responses);
+				
+			} else {
+				console.log("Error in adding bid");
+				json_responses = {"statusCode" : 401};
+				res.send(json_responses);
+			}
+		});
+	});
 };
 
 //Logout the user - invalidate the session
@@ -335,7 +648,9 @@ exports.logout = function(req,res)
 	res.redirect('/');
 };
 
-
+exports.fetchbiddingdata = fetchbiddingdata;
+exports.finduserhistory = finduserhistory;
+exports.initialiseuseritemsdata = initialiseuseritemsdata;
 exports.finduseradvertisements = finduseradvertisements;
 exports.updatecartafterdeletion = updatecartafterdeletion;
 exports.initialiseData = initialiseData;

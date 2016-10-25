@@ -20,113 +20,42 @@
   	</head>
 
   	<body ng-app="login" ng-controller="login" style = "background:#FCFBE3">
-  		
-  		{{trial}}
-  		<h1 style = "text-align:center">Checkout</h1>
-        
-        <div class = "col-md-4">
-        		<div class = "cartStyle">
-					
-						<h3 style = "text-align: center;">Your Cart<h3>
-					
-						<table class="table table-bordered table-hover" style="width:100%">
-  						<tr>
-    						<th style="text-align:center">Name</th>
-    						<th style="text-align:center">Price</th>
-    						<th style="text-align:center">Total</th>
-  						</tr>
- 
- 						<% for(var cartitem in cartdata) 
-	         			{              
-            			%>
-					 	
-					 	<tr>
-    						<td style="font-size : 15px"><%= cartdata[cartitem].itemname %></td>
-    						<td style="font-size : 15px"><%= cartdata[cartitem].itemprice %></td>
-    						<td style="font-size : 15px"><%= cartdata[cartitem].itemprice %></td>
-    						<td></td>
-  						</tr>
-  						
-  						<% 
-	        			}  
-	       				%>
-  							
-  						<tr>
-  							<th style="text-align:center">SubTotal</th>
-  							<th style="text-align:center"></th>
-  							<th style="text-align:center"><%= totalPrice %></th>
-  						</tr>
-					</table>
-							
-				</div>
-		</div>
-		
-		
-		<div class = "col-md-4" style = "text-align:left">
-			<h1 style = "text-align:center">Address Details</h1>
-		
-		<form name = "myForm">		
-			<p style = "margin-left : 3cm">
-				<strong>Country or Region</strong></br>
-				<select ng-model="selectedCountry" ng-options="x for x in countries"></select>
-			</p>
-			
-			<p style = "margin-left : 3cm">
-				<strong>Address Line 1*</strong></br>
-				<input type = "text" name = "address1" ng-model = "address1" required></input>
-			</p>
-			
-			<p style = "margin-left : 3cm">
-				<strong>Address Line 2*</strong></br>
-				<input type = "text" name = "address2" ng-model = "address2"></input>
-			</p>
-			
-			<p style = "margin-left : 3cm">
-				<strong>Landmark</strong></br>
-				<input type = "text" name = "landmark"></input>
-			</p>
-			
-			<p style = "margin-left : 3cm">
-				<strong>Contact Number*</strong></br>
-				<input type = "number" name = "contactnumber" ng-model = "contactnumber" required></input>
-			</p>
-			
-			<p style = "margin-left : 3cm">
-				<strong>Zip Code*</strong></br>
-				<input type = "number" name = zipcode ng-model = "zipcode" required></input>
-			</p>
-			
-		</div>
-		
-		
-		<div class = "col-md-4" style = "text-align:left">
-		<h1 style = "text-align:center">Credit Card Details</h1>
-			
+
+	<div class = "col-md-8" style = "text-align:center">
+			<h1 style = "text-align:center">Credit Card Details</h1>
+		<form name = "paymentForm" ng-submit="submitPaymentForm(ccNumber, expiryDate, ccCVV)" novalidate>		
+				
 				<p style = "margin-left : 3cm">
 					<strong>Credit Card Number*</strong></br>
-					<input type = "text" name = "ccNumber" ng-model = "ccNumber" maxlength="16" pattern="[0-9]{16}" title="16 digit credit card number" required></input>
+					<input type = "number" name = "ccNumber" ng-model = "ccNumber" ng-minlength="16" ng-maxlength="16" required></input>
+					<div style = "color:red" ng-show="paymentForm.ccNumber.$error.minlength" class="help-block">Credit card number must be of 16 digits</div>
+					<div style = "color:red" ng-show="paymentForm.ccNumber.$error.maxlength" class="help-block">Credit card number must be of 16 digits</div>
 				</p>
 			
 				<p style = "margin-left : 3cm">
 					<strong>Expiry Date*</strong></br>
-					<input type = "text" name = "ccExpiry" ng-model = "expiryDate" maxlength="5" ng-change="checkDate(expiryDate)" placeholder="MM-YY" required></input>
-			
-					<div class="alert alert-danger" ng-hide="expiryflag" style = "width:40% ; "margin-left : 3cm">
+					<input type = "text" name = "ccExpiry" ng-model = "expiryDate" ng-maxlength = "5" ng-change = "checkDate(expiryDate)" placeholder="MM-YY" required></input>
+					<div style = "color:red" ng-show="paymentForm.expiryDate.$error.maxlength" class="help-block">Expiry date must be in format MM-YY</div>
+					
+					<div class="alert alert-danger" ng-hide="datevalidflag" style = "margin-left : 3cm">
 						<strong>Invalid Expiry Date</strong>
 					</div>
 				</p>
 					
 				<p style = "margin-left : 3cm">
 					<strong>CVV*</strong></br>
-					<input type = "text" name = "ccCVV" ng-model = "ccCVV" maxlength="3" pattern="[0-9]{3}" title="3 digit CVV" required></input>
+					<input type = "number" name = "ccCVV" ng-model = "ccCVV" ng-minlength="3" ng-maxlength="3" required></input>
+					<div style = "color:red" ng-show="paymentForm.ccCVV.$error.minlength" class="help-block">CVV must be of 3 digits</div>
+					<div style = "color:red" ng-show="paymentForm.ccCVV.$error.maxlength" class="help-block">CVV must be of 3 digits</div>
 				</p>
-			
+	
+				
 				<p style = "margin-left : 3cm">
-					<input type = "submit" name = btnPay value = "Make Payment" ng-click = "checkDetails(ccNumber, expiryDate,ccCVV)" class="btn btn-success"></input>
+					<input type = "submit" name = btnPay value = "Make Payment" class="btn btn-success" ng-disabled = "paymentForm.$invalid"></input>
 				</p>
-			</form>
-			
-		</div>
+				
+		</form>
+	</div>
   		
-  	</body>
+</body>
 </html>

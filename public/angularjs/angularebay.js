@@ -6,10 +6,11 @@ login.controller('login', function($scope, $http, $interval) {
 	$scope.expiryflag = true;
 	$scope.invalid_login = true;
 	$scope.unexpected_error = true;
-	$scope.signupsuccess = true;
 	$scope.successadvertisement = true;
+	$scope.successbidadvertisement = true;	
 	var flag = 0;
 	var dm = [];
+	$scope.datevalidflag = true;
 	$scope.countries = ['USA', 'India', 'China', 'Other'];
 	
 	$scope.login = function() {
@@ -23,16 +24,15 @@ login.controller('login', function($scope, $http, $interval) {
 		}).success(function(data) {
 			//checking the response data for statusCode
 			if (data.statusCode == 401) {
-				$scope.invalid_login = false;
-				$scope.unexpected_error = true;
+				
+				alert("Incorrect username or password");
 			}
 			else
 				{
 					window.location.assign("/homepage"); 	//get request
 				}
 		}).error(function(error) {
-			$scope.unexpected_error = false;
-			$scope.invalid_login = true;
+			alert("Incorrect username or password");
 		});
 	};
 	
@@ -58,7 +58,7 @@ login.controller('login', function($scope, $http, $interval) {
 			}
 			else
 			{
-				$scope.signupsuccess = false;
+				alert("Sign Up Successful");
 			}
 		}).error(function(error) {
 			$scope.unexpected_error = false;
@@ -79,8 +79,9 @@ login.controller('login', function($scope, $http, $interval) {
 			}
 		}).success(function(data) {
 			//checking the response data for statusCode
-			if (data.statusCode == 401) {
-				
+			if (data.statusCode == 402) 
+			{
+				alert("Item is already there in the cart")
 			}
 			else
 				{
@@ -143,6 +144,32 @@ login.controller('login', function($scope, $http, $interval) {
 	};
 	
 	
+	$scope.submitbiddingadvertisement = function(itemname, itemdescription, itemprice)
+	{
+		$http({
+			method : "POST",
+			url : '/addBiddingAdvertisement',
+			data : {
+				"itemname" : itemname,
+				"itemdescription" : itemdescription,
+				"itemprice" : itemprice
+			}
+		}).success(function(data) {
+			//checking the response data for statusCode
+			if (data.statusCode == 401) {
+				
+			}
+			else
+			{
+				$scope.successbidadvertisement = false;	
+			}
+		}).error(function(error) {
+		
+		});
+	
+	};
+	
+	
 	$scope.checkDate = function(expiryDate)
 	{
 		if(flag === 0)
@@ -160,36 +187,94 @@ login.controller('login', function($scope, $http, $interval) {
 			}
 	};
 	
+
 	
-	$scope.checkDetails = function(ccNumber, expiryDate,ccCVV)
-	{
-		
-		//date validation
-		dm = expiryDate.split('-');
-		var month = dm[0];
-		var year = '20'+dm[1];
-		var currentdate = new Date();
-		
-		if(year  > currentdate.getFullYear() && month <= 12)
-		{
-			$scope.trial = "success";
-		}
-		else if(year  == currentdate.getFullYear() && month <= 12)
-		{
-			if(month >= currentdate.getMonth())
-			{
-				$scope.trial = "success";
-			}
+	$scope.submitAddressForm = function(isValid) {
+
+	    // check to make sure the form is completely valid
+	    if (isValid) 
+	    {
+	    	window.location.assign("/paymentpage"); 
+	    }
+
+	  };
+	  
+	  
+	  $scope.submitPaymentForm = function(ccNumber, expiryDate, ccCVV)
+	  {
+		  	//date validation
+			dm = expiryDate.split('-');
+			var month = dm[0];
+			var year = '20'+dm[1];
+			var currentdate = new Date();
 			
+			if(year  > currentdate.getFullYear() && month <= 12)
+			{
+				$scope.datevalidflag = true;
+			}
+			else if(year  == currentdate.getFullYear() && month <= 12)
+			{
+				if(month >= currentdate.getMonth())
+				{
+					$scope.datevalidflag = true;
+				}
+				
+				else
+				{
+					$scope.datevalidflag = false;
+				}
+			}
 			else
 			{
-				$scope.expiryflag = false;
+				$scope.datevalidflag = false;
 			}
-		}
-		else
-		{
-			$scope.expiryflag = false;
-		}		
-	};
+			
+			
+			
+			if($scope.datevalidflag == true)
+			{
+				window.location.assign("/successpage"); 
+			}
+			
+	  };
+	  
+	  $scope.increasebid = function(itemname, itemprice)
+	  {
+		  var amount = prompt("Please Enter Your Bid Amount", itemprice);
+		  
+		  amount = Number(amount);
+		  itemprice = Number(itemprice);
+		  
+		  if(amount <= itemprice )
+			  {
+			  	alert("Bid Amount Has To Be Greater Than "+itemprice);
+			  }
+		  
+		  else
+			  {
+			  $http({
+					method : "POST",
+					url : '/changebidamount',
+					data : {
+						"itemname" : itemname,
+						"amount" : amount
+					}
+				}).success(function(data) {
+					//checking the response data for statusCode
+					if (data.statusCode == 401) {
+						
+					}
+					else
+					{
+						window.location.assign("/homepage");
+					}
+				}).error(function(error) {
+				
+				});
+			  
+			  
+			  }
+		  
+	  }
 	
 });

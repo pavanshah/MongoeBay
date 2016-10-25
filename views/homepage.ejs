@@ -24,7 +24,7 @@
 		<div class = "row">
 				
 			<div class = "col-md-2">
-    			<h3>Hi <%= firstname %>!!</h3>
+    			<h3>Hi <%= firstname %>!! {{trial}}</h3>
     		</div>
     			
     		<div class = "col-md-2">
@@ -57,6 +57,29 @@
 		<div class = "row">
 			<div class = "col-md-8">
 			
+			
+				<div class = "row" style = "margin-left: 1%;">
+					<h3 style = "text-align:center">Bidding Advertisements</h3>		
+						
+						<% for(var advertisement in biddingdata) 
+	         			{              
+            			%>
+            				<div class = "col-md-4">
+								<div class = "advertisementStyle">
+									<strong>Name :</strong> <%= biddingdata[advertisement].itemname %></br>
+									<strong>Description :</strong> <%= biddingdata[advertisement].itemdescription %></br>
+									<strong>Price :</strong> $<%= biddingdata[advertisement].itemprice %></br>
+									<strong>Contact :</strong> <%= biddingdata[advertisement].username %></br>
+								</div>
+								<input type = "button" name = "btnIncreaseBid" ng-model = "btnIncreaseBid" value = "Increase Bid" ng-click = "increasebid('<%= biddingdata[advertisement].itemname %>', '<%= biddingdata[advertisement].itemprice %>');" class="btn btn-primary center-block"></input>
+							</div>
+				       
+           				<% 
+	        			}  
+	       				%>
+				</div>
+				
+			
 				<div class = "row" style = "margin-left: 1%;">
 					<h3 style = "text-align:center">New Advertisements</h3>		
 						
@@ -67,7 +90,7 @@
 								<div class = "advertisementStyle">
 									<strong>Name :</strong> <%= advertisementdata[advertisement].itemname %></br>
 									<strong>Description :</strong> <%= advertisementdata[advertisement].itemdescription %></br>
-									<strong>Price :</strong> $<%= advertisementdata[advertisement].itemprice %></br>
+									<strong>Current Bid :</strong> $<%= advertisementdata[advertisement].itemprice %></br>
 									<strong>Contact :</strong> <%= advertisementdata[advertisement].username %></br>
 								</div>
 								<input type = "button" name = "btnAddToCart" value = "Add To Cart" class="btn btn-primary center-block" ng-click = "addtocart('<%= advertisementdata[advertisement].itemname %>', '<%= advertisementdata[advertisement].itemprice %>')"></input>

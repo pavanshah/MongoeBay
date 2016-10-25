@@ -49,6 +49,8 @@ if ('development' === app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/homepage',main.redirectToHomepage);
+app.get('/paymentpage', main.paymentpage);
+app.get('/successpage', main.success);
 
 //POST Requests
 app.post('/checklogin', main.checkLogin);
@@ -60,6 +62,8 @@ app.post('/myaccount', main.myaccount);
 app.post('/sellonebay', main.sellonebay);
 app.post('/submitadvertisement', main.submitadvertisement);
 app.post('/checkout', main.checkout);
+app.post('/changebidamount', main.changebidamount);
+app.post('/addBiddingAdvertisement', main.addBiddingAdvertisement);
 
 //connect to the mongo collection session and then createServer
 mongo.connect(mongoSessionConnectURL, function(){
