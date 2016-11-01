@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  
+    <head>
+   		<title>MyeBay Sellor Page</title>
+   		<link rel='stylesheet' href='/stylesheets/style.css' />
+   		<link rel='stylesheet' href='/stylesheets/divstyle.css' />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  		<script src="angularjs/angularebay.js"></script>
+  	</head>
+
+  	<body style = "background:#F8F8F8" ng-app="login" ng-controller="login">
+  		
+  		<div class = "container-fluid">
+			<div class = "row">
+				<div class = "col-md-6">
+  		
+  				<h1>Post Your Advertisement</h1>
+  				<p style = "margin-left : 3cm">
+  					<strong>Item Name :</strong></br> 
+  					<input type = "text" name = "itemname" ng-model = "itemname">
+  				</p>
+  			
+  				<p style = "margin-left : 3cm">
+  					<strong>Item Description :</strong></br> 
+  					<input type = "text" name = "itemdescription" ng-model = "itemdescription">
+  				</p>
+  			
+  				<p style = "margin-left : 3cm">
+  					<strong>Expected Price :</strong></br> 
+  					<input type = "number" name = "itemprice" ng-model = "itemprice">
+  				</p>
+  			
+  				</br>
+  				
+  				<p style = "margin-left : 3cm">
+  					<input type = "button" name = "submitAdd" value = "Publish Advertisement" class="btn btn-success" ng-click = "submitadvertisement(itemname, itemdescription, itemprice);">
+  				</p>
+  				
+  				<div class="alert alert-success" ng-hide="successadvertisement" style="width:50% ; margin-left : 3cm">
+				<strong>Advertisement Added Successfully</strong>
+				</div>
+  		
+  		</div>
+  		
+  		
+  		<div class = "col-md-6">
+  		
+  			<h1>Interested In Bidding Your Product?</h1>
+  			<form>
+  			
+  				<p style = "margin-left : 3cm">
+  					<strong>Item Name :</strong></br> 
+  					<input type = "text" name = "itemname" ng-model = "biditemname">
+  				</p>
+  			
+  				<p style = "margin-left : 3cm">
+  					<strong>Item Description :</strong></br> 
+  					<input type = "text" name = "itemdescription" ng-model = "biditemdescription">
+  				</p>
+  			
+  				<p style = "margin-left : 3cm">
+  					<strong>Set Initial Price :</strong></br> 
+  					<input type = "number" name = "itemprice" ng-model = "biditemprice">
+  				</p>
+  			
+  				</br>
+  				<p style = "margin-left : 3cm">
+  					<input type = "submit" name = "submitAdd" value = "Start Bidding" class="btn btn-success" ng-click = "submitbiddingadvertisement(biditemname, biditemdescription, biditemprice);">
+  				</p>	
+  		
+  			</form>
+  			
+  			<div class="alert alert-success" ng-hide="successbidadvertisement" style="width:50% ; margin-left : 3cm">
+				<strong>Advertisement Added Successfully</strong>
+			</div>
+  	</div>
+  		
+  	</body>
+</html>

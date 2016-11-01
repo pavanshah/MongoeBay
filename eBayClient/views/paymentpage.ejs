@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  
+    <head>
+   		<title>MyeBay Payment Page</title>
+   		<link rel='stylesheet' href='/stylesheets/style.css' />
+   		<link rel='stylesheet' href='/stylesheets/divstyle.css' />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.26/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+		<!-- Loading the AngularJS file from /public/angularJS folder -->
+		<script src="angularjs/angularebay.js"></script>
+  	
+  	</head>
+
+  	<body ng-app="login" ng-controller="login" style = "background:#F8F8F8">
+
+	<div class = "col-md-8" style = "text-align:center">
+			<h1 style = "text-align:center">Credit Card Details</h1>
+		<form name = "paymentForm" ng-submit="submitPaymentForm(ccNumber, expiryDate, ccCVV)" novalidate>		
+				
+				<p style = "margin-left : 3cm">
+					<strong>Credit Card Number*</strong></br>
+					<input type = "number" name = "ccNumber" ng-model = "ccNumber" ng-minlength="16" ng-maxlength="16" required></input>
+					<div style = "color:red" ng-show="paymentForm.ccNumber.$error.minlength" class="help-block">Credit card number must be of 16 digits</div>
+					<div style = "color:red" ng-show="paymentForm.ccNumber.$error.maxlength" class="help-block">Credit card number must be of 16 digits</div>
+				</p>
+			
+				<p style = "margin-left : 3cm">
+					<strong>Expiry Date*</strong></br>
+					<input type = "text" name = "ccExpiry" ng-model = "expiryDate" ng-maxlength = "5" ng-change = "checkDate(expiryDate)" placeholder="MM-YY" required></input>
+					<div style = "color:red" ng-show="paymentForm.expiryDate.$error.maxlength" class="help-block">Expiry date must be in format MM-YY</div>
+					
+					<div class="alert alert-danger" ng-hide="datevalidflag" style = "margin-left : 3cm">
+						<strong>Invalid Expiry Date</strong>
+					</div>
+				</p>
+					
+				<p style = "margin-left : 3cm">
+					<strong>CVV*</strong></br>
+					<input type = "number" name = "ccCVV" ng-model = "ccCVV" ng-minlength="3" ng-maxlength="3" required></input>
+					<div style = "color:red" ng-show="paymentForm.ccCVV.$error.minlength" class="help-block">CVV must be of 3 digits</div>
+					<div style = "color:red" ng-show="paymentForm.ccCVV.$error.maxlength" class="help-block">CVV must be of 3 digits</div>
+				</p>
+	
+				
+				<p style = "margin-left : 3cm">
+					<input type = "submit" name = btnPay value = "Make Payment" class="btn btn-success" ng-disabled = "paymentForm.$invalid"></input>
+				</p>
+				
+		</form>
+	</div>
+  		
+</body>
+</html>
