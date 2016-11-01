@@ -523,6 +523,93 @@ function handle_changebidrequest(msg, callback)
 	});
 }
 
+//------------------------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------------------------
+//add to user items
+function handle_orderrequest(msg, callback)
+{
+	var res = {};
+	
+	console.log(msg);
+	
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('useritemcollection');		//collection data in coll
+		
+		for(var i=0; i< msg.cartdata.length; i++)
+		{
+		
+			coll.update({username : msg.username}, {$push : {useritems : msg.cartdata[i]} } , function(err, user){
+				if (user) 
+				{
+					console.log("account updated");
+					deleteAdvertisement(msg, callback, res);
+				} 
+				else 
+				{
+					console.log("Error in adding to user account");
+					res.code = "401";
+					callback(null, res);
+				}
+			});	
+		}
+	});
+}
+	
+//delete advertisement
+function deleteAdvertisement(msg, callback, res)
+{
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('advertisementcollection');		//collection data in coll
+		
+		for(var j=0; j< msg.cartdata.length; j++)
+		{
+		
+			coll.remove({itemname : msg.cartdata[j].itemname} , function(err, user){
+				if (user) 
+				{
+					console.log("deleted advertisement");
+					deleteFromCartdata(msg, callback, res);
+				} 
+				else 
+				{
+					console.log("Error in deleting");
+					res.code = "401";
+					callback(null, res);
+				}
+			});	
+		}
+	});
+}
+	
+	//delete from cartdata
+function deleteFromCartdata(msg, callback, res)
+{
+	mongo.connect(mongoURL, function(){
+		console.log('Connected to mongo at: ' + mongoURL);
+		var coll = mongo.collection('cartcollection');		//collection data in coll
+	
+			coll.update({username : msg.username}, {$set : {cartdata : [], totalprice : 0 }} , function(err, user){
+				if (user) 
+				{
+					console.log("cartdata updated");
+					res.code = "200";
+					callback(null, res);
+				} 
+				else 
+				{
+					console.log("Error in updating cartdata");
+					res.code = "401";
+					callback(null, res);
+				}
+			});	
+	});
+}
+
+//--------------------------------------------------------------------------------------------
 
 exports.handle_loginrequest = handle_loginrequest;
 exports.handle_homepagerequest = handle_homepagerequest;
@@ -534,3 +621,4 @@ exports.handle_addadvertisementrequest = handle_addadvertisementrequest;
 exports.handle_addbiddingadvertisementrequest = handle_addbiddingadvertisementrequest;
 exports.handle_sellafterbidrequest = handle_sellafterbidrequest;
 exports.handle_changebidrequest = handle_changebidrequest;
+exports.handle_orderrequest = handle_orderrequest;

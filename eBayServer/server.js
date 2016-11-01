@@ -205,4 +205,22 @@ cnn.on('ready', function(){
 		});	
 	});
 	
+	//listening to order_queue
+	cnn.queue('order_queue', function(q){
+		console.log("listening to order_queue");
+		
+			q.subscribe(function(message, headers, deliveryInfo, m){
+				
+			handler.handle_orderrequest(message, function(err,res){		//server is waiting for result to receive
+				console.log("result received for order_queue "+res);
+				//published to replyTo queue, client is already subscribed so will be able to listen
+				cnn.publish(m.replyTo, res, {
+					contentType:'application/json',
+					contentEncoding:'utf-8',
+					correlationId:m.correlationId
+				});
+			});
+		});	
+	});
+	
 });

@@ -485,4 +485,36 @@ exports.eBayHandle = function(req, res)
 };
 
 
+exports.paymentpage = function(req, res)
+{
+	res.render("paymentpage");
+};
+
+
+exports.success = function(req, res)
+{
+	var credentials = {"username" : req.session.username , "cartdata" : cartdata};
+	
+	//go to server to perform remaining activities
+	rpc.makeRequest('order_queue',credentials, function(err,results){
+		
+		if(err){
+			throw err;
+		}
+		else 
+		{
+			if(results.code == 200)
+			{
+				console.log("success");
+				res.render("successpage");
+			}
+			else 
+			{
+				console.log("failure");
+			}
+		}  
+	});	
+	
+};
+
 exports.myaccount = myaccount;

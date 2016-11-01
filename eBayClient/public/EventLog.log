@@ -261,3 +261,15 @@
 {"level":"info","message":"User with email id pavanshah@gmail.com clicked on my account","timestamp":"2016-11-01T10:05:11.190Z"}
 {"level":"info","message":"User with email id undefined clicked on my account","timestamp":"2016-11-01T10:08:35.505Z"}
 {"level":"info","message":"User with email id undefined clicked on my account","timestamp":"2016-11-01T10:08:51.194Z"}
+{"level":"info","message":"User with email id vanshzaveri@gmail.com deleted Dell Inspiron Laptop from cart","timestamp":"2016-11-01T21:46:06.837Z"}
+{"level":"info","message":"User with email id vanshzaveri@gmail.com added Lenovo K3 note to cart","timestamp":"2016-11-01T21:46:13.468Z"}
+{"level":"info","message":"User with email id vanshzaveri@gmail.com clicked on my account","timestamp":"2016-11-01T21:46:25.206Z"}
+{"level":"info","message":"User with email id vanshzaveri@gmail.com clicked on checkout","timestamp":"2016-11-01T21:46:29.054Z"}
+{"level":"info","message":"User with email id vanshzaveri@gmail.com clicked on my account","timestamp":"2016-11-01T21:46:47.652Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com clicked on checkout","timestamp":"2016-11-01T22:12:03.446Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com clicked on my account","timestamp":"2016-11-01T22:12:57.335Z"}
+{"level":"info","message":"User with email id pavanshah@gmail.com clicked on checkout","timestamp":"2016-11-01T22:20:20.075Z"}
+{"level":"info","message":"User with email id nitishbarya@gmail.com deleted XBox one from cart","timestamp":"2016-11-01T22:35:01.975Z"}
+{"level":"info","message":"User with email id nitishbarya@gmail.com added Gym equipments to cart","timestamp":"2016-11-01T22:35:16.402Z"}
+{"level":"info","message":"User with email id nitishbarya@gmail.com clicked on my account","timestamp":"2016-11-01T22:35:31.690Z"}
+{"level":"info","message":"User with email id nitishbarya@gmail.com clicked on checkout","timestamp":"2016-11-01T22:35:44.500Z"}

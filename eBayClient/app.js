@@ -51,8 +51,8 @@ if ('development' === app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/homepage',client.redirectToHomepage);
-app.get('/paymentpage', main.paymentpage);
-app.get('/successpage', main.success);
+app.get('/paymentpage', client.paymentpage);
+app.get('/successpage', client.success);
 app.get('/myaccount/:username', client.eBayHandle);
 
 //POST Requests
