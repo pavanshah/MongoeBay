@@ -43,7 +43,6 @@
     						<td style="font-size : 15px"><%= cartdata[cartitem].itemname %></td>
     						<td style="font-size : 15px"><%= cartdata[cartitem].itemprice %></td>
     						<td style="font-size : 15px"><%= cartdata[cartitem].itemprice %></td>
-    						<td></td>
   						</tr>
   						
   						<% 
@@ -58,6 +57,9 @@
 					</table>
 							
 				</div>
+				
+				<img src = "/images/tp6.png" width = "600">
+				
 		</div>
 		
 		
@@ -65,37 +67,37 @@
 			<h1 style = "text-align:center">Address Details</h1>
 		
 			<form name = "userForm" ng-submit="submitAddressForm(userForm.$valid)" novalidate>		
-				<p style = "margin-left : 8cm">
+				<p style = "margin-left : 9cm">
 					<strong>Country or Region</strong></br>
 					<select ng-model="selectedCountry" ng-options="x for x in countries"></select>
 				</p>
 			
-				<p style = "margin-left : 8cm">
-					<strong>Address Line 1*</strong></br>
+				<p style = "margin-left : 9cm">
+					<strong>Address Line 1</strong><b style = "color : red ; font-size : 150%">*</b></br>
 					<input type = "text" name = "address1" ng-model = "address1" required></input>
 				</p>
 			
-				<p style = "margin-left : 8cm">
-					<strong>Address Line 2*</strong></br>
+				<p style = "margin-left : 9cm">
+					<strong>Address Line 2</strong><b style = "color : red ; font-size : 150%">*</b></br>
 					<input type = "text" name = "address2" ng-model = "address2"></input>
 				</p>
 			
-				<p style = "margin-left : 8cm">
+				<p style = "margin-left : 9cm">
 					<strong>Landmark</strong></br>
 					<input type = "text" name = "landmark"></input>
 				</p>
 			
-				<p style = "margin-left : 8cm">
-					<strong>Contact Number*</strong></br>
+				<p style = "margin-left : 9cm">
+					<strong>Contact Number</strong><b style = "color : red ; font-size : 150%">*</b></br>
 					<input type = "number" name = "contactnumber" ng-model = "contactnumber" required></input>
 				</p>
 			
-				<p style = "margin-left : 8cm" style = "width : 200%">
-					<strong>Zip Code*</strong></br>
+				<p style = "margin-left : 9cm" style = "width : 150%">
+					<strong>Zip Code</strong><b style = "color : red ; font-size : 150%">*</b></br>
 					<input type = "number" name = zipcode ng-model = "zipcode" required></input>
 				</p>
 				
-				<p style = "margin-left : 8cm">
+				<p style = "margin-left : 9cm">
 					<input type = "submit" name = btnPay value = "Proceed To Pay" class="btn btn-success" ng-disabled = "userForm.$invalid"></input>
 				</p>
 			</form>

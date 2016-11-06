@@ -9,6 +9,8 @@
     "express": "3.2.6",
     "ejs": "*",
     "mongo" : "*",
-    "amqp" : "*"	
+    "amqp" : "*",
+    "passport" : "*",
+    "passport-local" : "*"
   }
 }

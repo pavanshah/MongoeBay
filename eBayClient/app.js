@@ -1,14 +1,10 @@
-
-/**
- * Module dependencies.
- */
-
 var express = require('express')
 , routes = require('./routes')
 , user = require('./routes/user')
 , http = require('http')
 , path = require('path');
 var url = require('url');
+var passport = require('passport');
 
 //URL for the sessions collections in mongoDB
 var mongoSessionConnectURL = "mongodb://localhost:27017/eBayDatabase";
@@ -40,6 +36,7 @@ app.use(expressSession({
 }));
 
 app.use(app.router);
+app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //development only
@@ -56,7 +53,7 @@ app.get('/successpage', client.success);
 app.get('/myaccount/:username', client.eBayHandle);
 
 //POST Requests
-app.post('/checklogin', client.checkLogin);
+app.post('/checklogin', client.checklogin);
 app.post('/logout', client.logout);
 app.post('/checkSignup', client.checkSignup);
 app.post('/addtocart', client.addtocart);
@@ -67,6 +64,7 @@ app.post('/submitadvertisement', client.submitadvertisement);
 app.post('/checkout', client.checkout);
 app.post('/changebidamount', client.changebidamount);
 app.post('/addBiddingAdvertisement', client.addBiddingAdvertisement);
+app.post('/contactus', client.contactus);
 
 //connect to the mongo collection session and then createServer
 mongo.connect(mongoSessionConnectURL, function(){

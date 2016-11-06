@@ -1,5 +1,7 @@
 var mongo = require("../services/mongo");
 var mongoURL = "mongodb://localhost:27017/eBayDatabase";
+var passport = require("passport");
+var LocalStrategy = require("passport-local").Strategy;
 
 //-----------------------------------------------------------------------------------------------
 function handle_loginrequest(msg, callback){
@@ -7,15 +9,22 @@ function handle_loginrequest(msg, callback){
 	var res = {};
 	console.log("In handle request:"+ msg.username);
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
+		console.log("connection received "+connection);
+		
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('usercollection');		//collection data in coll
 		
 		coll.findOne({username: msg.username, password:msg.password}, function(err, user){
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.code = "200";
 				res.userdata = user;
+			
 				initialiseData(msg, callback, res);
 			} 
 			
@@ -30,11 +39,15 @@ function handle_loginrequest(msg, callback){
 
 function initialiseData(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('cartcollection');		//collection data in coll
 		
 		coll.findOne({username: msg.username}, function(err, user){	//retrive data
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.cartdata = user.cartdata;
@@ -52,7 +65,7 @@ function initialiseData(msg, callback, res)
 
 function saveLogintime(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('usercollection');		//collection data in coll
 		
@@ -67,6 +80,10 @@ function saveLogintime(msg, callback, res)
 		
 		
 		coll.update({username: msg.username}, {$set : {LastLoginTime : Logintime }}, function(err, user){
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				console.log("res "+res);
@@ -90,11 +107,15 @@ function handle_homepagerequest(msg, callback)
 	
 	console.log("homepage username "+msg.username);
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('advertisementcollection');		//collection data in coll
 		
 		coll.find({},{}).toArray(function(err, user){	//retrive data
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.advertisementdata = user;
@@ -113,11 +134,15 @@ function handle_homepagerequest(msg, callback)
 
 function fetchbiddingdata(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('biddingcollection');		//collection data in coll
 		
 		coll.find({},{}).toArray(function(err, user){	//retrive data
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.code = "200";
@@ -151,11 +176,15 @@ function handle_signuprequest(msg, callback)
 	var NewLoginTime = days[Logintime.getDay()]+' '+months[Logintime.getMonth()]+' '+Logintime.getDate()+' '+Logintime.getFullYear()+' '+hours+':'+minutes+ampm;
 	console.log(NewLoginTime);
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('usercollection');
 		
 		coll.insert({firstname:msg.inputFirstName, lastname:msg.inputLastName, mobile:msg.inputMobileNumber, dob:msg.inputDateOfBirth, username:msg.inputUsername, password:msg.inputPassword, eBayHandle:msg.eBayHandle, LastLoginTime : NewLoginTime}, function(err, user){
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				initialisecart(msg, callback, res);
@@ -173,11 +202,15 @@ function handle_signuprequest(msg, callback)
 
 function initialisecart(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('cartcollection');
 	
 		coll.save({_id:msg.inputUsername, username:msg.inputUsername, cartdata : [] , totalprice : 0}, function(err, user){
+		
+		console.log("connection returned "+connection);
+		mongo.returnConnection(connection);
+			
 		if (user) 
 		{
 			initialiseuseritemsdata(msg, callback, res);
@@ -195,11 +228,15 @@ function initialisecart(msg, callback, res)
 
 function initialiseuseritemsdata(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('useritemcollection');
 	
 		coll.save({_id:msg.inputUsername, username:msg.inputUsername, useritems : [], eBayHandle : msg.eBayHandle}, function(err, user){
+		
+		console.log("connection returned "+connection);
+		mongo.returnConnection(connection);
+			
 		if (user) 
 		{
 			res.code = "200";
@@ -221,11 +258,15 @@ function handle_addtocartrequest(msg, callback)
 {
 	var res = {};
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('cartcollection');		//collection data in coll
 		
 		coll.save({_id:msg.username, username:msg.username, cartdata : msg.cartdata , totalprice : msg.totalPrice}, function(err, user){
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.code = "200";
@@ -248,11 +289,15 @@ function handle_deletefromcartrequest(msg, callback)
 {
 	var res = {};
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('cartcollection');		//collection data in coll
 		
 		coll.update({_id : msg.username}, {$pull : {cartdata : {itemname : msg.itemname} }, $set : {totalprice : msg.totalPrice} } , function(err, user){
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				updatecartafterdeletion(msg, callback, res);
@@ -269,11 +314,15 @@ function handle_deletefromcartrequest(msg, callback)
 
 function updatecartafterdeletion(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('cartcollection');		//collection data in coll
 		
 		coll.findOne({username: msg.username}, function(err, user){	//retrive data
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.cartdata = user.cartdata;
@@ -297,11 +346,15 @@ function handle_myaccountrequest(msg, callback)
 {
 	var res = {};
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('usercollection');		//collection data in coll
 		
 		coll.findOne({eBayHandle: msg.eBayHandle}, function(err, user){	//retrive data
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.userdetails = user;
@@ -321,11 +374,15 @@ function handle_myaccountrequest(msg, callback)
 
 function finduseradvertisements(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('advertisementcollection');		//collection data in coll
 		
 		coll.find({eBayHandle : msg.eBayHandle}).toArray(function(err, user){	//retrive data
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.useradvertisementdetails = user;
@@ -345,11 +402,15 @@ function finduseradvertisements(msg, callback, res)
 
 function finduserhistory(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('useritemcollection');		//collection data in coll
 		
 		coll.findOne({eBayHandle : msg.eBayHandle}, function(err, user){	//retrive data
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.historydetails = user.useritems;
@@ -372,11 +433,15 @@ function handle_addadvertisementrequest(msg, callback)
 {
 	var res = {};
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('advertisementcollection');		//collection data in coll
 		
 		coll.insert({itemname : msg.itemname, itemdescription : msg.itemdescription, itemprice : msg.itemprice, username : msg.username, eBayHandle : msg.eBayHandle}, function(err, user){
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.code = "200";
@@ -397,11 +462,15 @@ function handle_addbiddingadvertisementrequest(msg, callback)
 {
 	var res = {};
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('biddingcollection');		//collection data in coll
 		
 		coll.insert({username:msg.username, itemname:msg.itemname, itemdescription:msg.itemdescription, itemprice:msg.itemprice, buyer:msg.username}, function(err, user){
+			
+			console.log("connection returned "+connection);
+			mongo.returnConnection(connection);
+			
 			if (user) 
 			{
 				res.code = "200";
@@ -423,11 +492,15 @@ function handle_sellafterbidrequest(msg, callback)
 {
 	var res = {};	
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('biddingcollection');
 	
 			coll.findOne({itemname : msg.itemname} , function(err, user){
+				
+				console.log("connection returned "+connection);
+				mongo.returnConnection(connection);
+				
 				if (user) 
 				{
 					res.buyer = user.buyer;
@@ -450,11 +523,15 @@ function addbiditemtouseraccount(msg, callback, res)
 	console.log("adding to user account");
 	
 	//add to user items
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('useritemcollection');		//collection data in coll
 		
 			coll.update({username : res.buyer}, {$push : {useritems : {itemname : msg.itemname, itemprice : msg.itemprice} } } , function(err, user){
+				
+				console.log("connection returned "+connection);
+				mongo.returnConnection(connection);
+				
 				if (user) 
 				{
 					console.log("account updated");
@@ -474,11 +551,15 @@ function addbiditemtouseraccount(msg, callback, res)
 function deletefrombiddingadvertisements(msg, callback, res)
 {
 	//delete advertisement
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('biddingcollection');		//collection data in coll
 		
 			coll.remove({itemname : msg.itemname} , function(err, user){
+				
+				console.log("connection returned "+connection);
+				mongo.returnConnection(connection);
+				
 				if (user) 
 				{
 					console.log("deleted advertisement");
@@ -502,11 +583,15 @@ function handle_changebidrequest(msg, callback)
 	var res = {};
 	
 	//update bid amount
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('biddingcollection');		//collection data in coll
 	
 			coll.update({itemname : msg.itemname}, {$set : {itemprice : msg.amount, buyer : msg.buyer}} , function(err, user){
+				
+				console.log("connection returned "+connection);
+				mongo.returnConnection(connection);
+				
 				if (user) 
 				{
 					console.log("bid amount updated");
@@ -534,7 +619,7 @@ function handle_orderrequest(msg, callback)
 	
 	console.log(msg);
 	
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('useritemcollection');		//collection data in coll
 		
@@ -542,6 +627,10 @@ function handle_orderrequest(msg, callback)
 		{
 		
 			coll.update({username : msg.username}, {$push : {useritems : msg.cartdata[i]} } , function(err, user){
+				
+				console.log("connection returned "+connection);
+				mongo.returnConnection(connection);
+				
 				if (user) 
 				{
 					console.log("account updated");
@@ -561,7 +650,7 @@ function handle_orderrequest(msg, callback)
 //delete advertisement
 function deleteAdvertisement(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('advertisementcollection');		//collection data in coll
 		
@@ -569,6 +658,9 @@ function deleteAdvertisement(msg, callback, res)
 		{
 		
 			coll.remove({itemname : msg.cartdata[j].itemname} , function(err, user){
+				console.log("connection returned "+connection);
+				mongo.returnConnection(connection);
+				
 				if (user) 
 				{
 					console.log("deleted advertisement");
@@ -588,11 +680,15 @@ function deleteAdvertisement(msg, callback, res)
 	//delete from cartdata
 function deleteFromCartdata(msg, callback, res)
 {
-	mongo.connect(mongoURL, function(){
+	mongo.connect(mongoURL, function(connection){
 		console.log('Connected to mongo at: ' + mongoURL);
 		var coll = mongo.collection('cartcollection');		//collection data in coll
 	
 			coll.update({username : msg.username}, {$set : {cartdata : [], totalprice : 0 }} , function(err, user){
+				
+				console.log("connection returned "+connection);
+				mongo.returnConnection(connection);
+				
 				if (user) 
 				{
 					console.log("cartdata updated");

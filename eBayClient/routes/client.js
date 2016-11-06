@@ -2,6 +2,11 @@ var mongo = require("./mongo");
 var mongoURL = "mongodb://localhost:27017/eBayDatabase";
 var CronJob = require('cron').CronJob;
 var url = require('url');
+var passport = require("passport");
+var LocalStrategy = require("passport-local").Strategy;
+var crypto = require('crypto');
+var algorithm = 'aes-256-ctr';
+var password = 'd6F3Efeq';
 
 var winston = require('winston');
 winston.add(winston.transports.File, { filename: 'public/EventLog.log' });
@@ -18,51 +23,82 @@ var amqp = require('amqp');
 var connection = amqp.createConnection({host:'127.0.0.1'});
 var rpc = new (require('../routes/amqprpc'))(connection);	//new object
 
-//check credentials
-exports.checkLogin = function(req,res){
-	
-	var username = req.param("loginUsername");	// These two variables come from the form
-	var password = req.param("loginPassword");
-	console.log(password +" is the object");
+
+
+//check credentials using passport
+exports.checklogin = function(req,res,next)
+{ 
 	var json_responses;
-	var credentials = {"username" : username, "password" : password};
+	console.log("inside post request");
 	
-	
-	rpc.makeRequest('login_queue',credentials, function(err,results){
-		
-		if(err){
-			throw err;
-		}
-		else 
+	passport.authenticate('login', function(err, results, info) {   	//callback done received
+		console.log("inside authenticate "+results);
+
+		if(!results) 
 		{
-			if(results.code == 200)
-			{
-				//userdata and session initialized
-				req.session.username = results.userdata.username;	// This way subsequent requests will know the user is logged in
-				req.session.firstname = results.userdata.firstname;
-				eBayHandle = results.userdata.eBayHandle;
-				console.log(req.session.username +" is the session");
-				console.log("eBayHandle "+eBayHandle);
-				LastLoginTime = results.userdata.LastLoginTime;
-				console.log(LastLoginTime);
-				
-				//cart data and total price initialized
-				cartdata = results.cartdata;
-				totalPrice = results.totalPrice;
-				
-				//response sent to angular to load homepage
-				json_responses = {"statusCode" : 200};
-				res.send(json_responses);
-			}
-			else 
-			{    	
-				json_responses = {"statusCode" : 401};
-				res.send(json_responses);
-			}
-		}  
-	});
+			console.log("not a user");
+			json_responses = {"statusCode" : 401};
+			res.send(json_responses);
+		}
+		else
+		{
+			//userdata and session initialized
+			req.session.username = results.userdata.username;	// This way subsequent requests will know the user is logged in
+			req.session.firstname = results.userdata.firstname;
+			eBayHandle = results.userdata.eBayHandle;
+			console.log(req.session.username +" is the session");
+			console.log("eBayHandle "+eBayHandle);
+			LastLoginTime = results.userdata.LastLoginTime;
+			console.log(LastLoginTime);
+			
+			//cart data and total price initialized
+			cartdata = results.cartdata;
+			totalPrice = results.totalPrice;
+			
+			//response sent to angular to load homepage
+			json_responses = {"statusCode" : 200};
+			res.send(json_responses);
+		}	
+  })(req, res, next);
 };
 
+//defining passport strategy
+passport.use('login', new LocalStrategy(function(username, password, done) {
+	
+    	console.log("inside passport setup username "+username+" password "+password);
+        
+    	password = encrypt(password);
+    	console.log("Signin password "+password);
+    	
+        var credentials = {
+            username:username,
+            password:password
+        }
+        
+        process.nextTick(function(){
+        	
+        	rpc.makeRequest('login_queue',credentials, function(err,results){
+        		
+        		if(err){
+        			throw err;
+        		}
+        		else 
+        		{
+        			if(results.code == 200)
+        			{
+        				console.log("success");
+        				done(null, results, null);
+        			}
+        			else 
+        			{    	
+        				console.log("failure");
+        				done(null, false, null);
+        			}
+        		}  
+        	});
+        
+        });
+}));
 
 //Redirects to the homepage
 exports.redirectToHomepage = function(req,res)
@@ -88,7 +124,7 @@ exports.redirectToHomepage = function(req,res)
 					biddingdata = results.biddingdata;
 					
 					res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-					res.render("homepage",{firstname:req.session.firstname, advertisementdata:advertisementdata, cartdata:cartdata, totalPrice:totalPrice, biddingdata:biddingdata, LastLoginTime:LastLoginTime});
+					res.render("homepage2",{firstname:req.session.firstname, advertisementdata:advertisementdata, cartdata:cartdata, totalPrice:totalPrice, biddingdata:biddingdata, LastLoginTime:LastLoginTime});
 					
 				}
 				else 
@@ -128,6 +164,9 @@ exports.checkSignup = function(req, res)
 	var str = inputFirstName+inputLastName;
 	eBayHandle = str.toLowerCase();
 	console.log(eBayHandle);
+	
+	inputPassword = encrypt(inputPassword);
+	console.log("Encrypted password - "+inputPassword);
 
 	var credentials = {"inputFirstName" : inputFirstName, "inputLastName" : inputLastName, "inputMobileNumber" : inputMobileNumber, "inputDateOfBirth" : inputDateOfBirth, "inputUsername" : inputUsername, "inputPassword" : inputPassword, "eBayHandle" : eBayHandle};
 	var json_responses;
@@ -517,4 +556,28 @@ exports.success = function(req, res)
 	
 };
 
+
+//encrytption, decription using crypto
+function encrypt(text)
+{
+	  var cipher = crypto.createCipher(algorithm,password);
+	  var crypted = cipher.update(text,'utf8','hex');
+	  crypted += cipher.final('hex');
+	  return crypted;
+}
+
+function decrypt(text)
+{
+	  var decipher = crypto.createDecipher(algorithm,password);
+	  var dec = decipher.update(text,'hex','utf8');
+	  dec += decipher.final('utf8');
+	  return dec;
+}
+
+function contactus(req, res)
+{
+	res.render("contactus");
+}
+
 exports.myaccount = myaccount;
+exports.contactus = contactus;

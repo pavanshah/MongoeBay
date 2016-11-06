@@ -7,8 +7,13 @@ var mongo = require("./services/mongo");
 var mongoURL = "mongodb://localhost:27017/eBayDatabase";
 var mongoSessionConnectURL = "mongodb://localhost:27017/eBayDatabase";
 
-mongo.connect(mongoSessionConnectURL, function(){
-	console.log('Connected to mongo at: ' + mongoSessionConnectURL);
+
+mongo.createPool(function(){
+	
+	mongo.connect(mongoSessionConnectURL, function(){
+		console.log('Connected to mongo at: ' + mongoSessionConnectURL);
+	});
+	
 });
 
 var cnn = amqp.createConnection({host:'127.0.0.1'});

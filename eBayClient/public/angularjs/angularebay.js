@@ -18,8 +18,8 @@ login.controller('login', function($scope, $http, $interval) {
 			method : "POST",
 			url : '/checklogin',
 			data : {
-				"loginUsername" : $scope.loginUsername,
-				"loginPassword" : $scope.loginPassword
+				"username" : $scope.loginUsername,
+				"password" : $scope.loginPassword
 			}
 		}).success(function(data) {
 			//checking the response data for statusCode
