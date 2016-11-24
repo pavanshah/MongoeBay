@@ -8,7 +8,7 @@ __Login Page -__ </br>
 __Homepage -__ </br>
 ![image](https://cloud.githubusercontent.com/assets/22826481/20594199/178c96c8-b1ea-11e6-9723-1009fe7d0c6e.png)
 
-__Regular and Bidding advertisements - __</br>
+__Regular and Bidding advertisements -__</br>
 ![image](https://cloud.githubusercontent.com/assets/22826481/20594221/30ab3e70-b1ea-11e6-8131-ef8954d329b6.png)
 
 ![image](https://cloud.githubusercontent.com/assets/22826481/20594242/4a456806-b1ea-11e6-9747-c1434e4ceee6.png)
